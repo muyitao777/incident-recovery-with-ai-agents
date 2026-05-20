@@ -7,7 +7,7 @@ Two prototype previews of an AI-assisted incident recovery experience, both expo
 **Landing:** https://muyitao777.github.io/incident-recovery-with-ai-agents/
 
 ### Wireframes (lo-fi)
-- V1 — https://muyitao777.github.io/incident-recovery-with-ai-agents/v1/
+- V1 — https://muyitao777.github.io/incident-recovery-with-ai-agents/v1-wireframe/
 - V2 — https://muyitao777.github.io/incident-recovery-with-ai-agents/v2-wireframe/
 
 ### HiFi prototypes
@@ -24,6 +24,6 @@ Each version is a standalone Vite app:
 cd <version-dir> && npm install && npm run dev
 ```
 
-Where `<version-dir>` is one of `v1`, `v2-wireframe`, `v2`, `v4`, `v8`, `v11`.
+Where `<version-dir>` is one of `v1-wireframe`, `v2-wireframe`, `v2`, `v4`, `v8`, `v11`.
 
 Both apps are standalone Vite + React + Tailwind projects. The GitHub Actions workflow in `.github/workflows/deploy.yml` builds both on every push to `main` and publishes to GitHub Pages.
