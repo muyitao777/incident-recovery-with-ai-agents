@@ -14,6 +14,9 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  VERSIONS: "v1 v2-wireframe v2 v4 v8 v11"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,25 +28,29 @@ jobs:
           cache: npm
           cache-dependency-path: |
             v1/package-lock.json
+            v2-wireframe/package-lock.json
+            v2/package-lock.json
+            v4/package-lock.json
+            v8/package-lock.json
             v11/package-lock.json
 
-      - name: Install & build v1
-        working-directory: ./v1
+      - name: Build all versions
         run: |
-          npm ci
-          npm run build
-
-      - name: Install & build v11
-        working-directory: ./v11
-        run: |
-          npm ci
-          npm run build
+          set -euo pipefail
+          for v in $VERSIONS; do
+            echo "::group::Build $v"
+            (cd "$v" && npm ci && npm run build)
+            echo "::endgroup::"
+          done
 
       - name: Assemble combined dist
         run: |
-          mkdir -p dist/v1 dist/v11
-          cp -r v1/dist/. dist/v1/
-          cp -r v11/dist/. dist/v11/
+          set -euo pipefail
+          mkdir -p dist
+          for v in $VERSIONS; do
+            mkdir -p "dist/$v"
+            cp -r "$v/dist/." "dist/$v/"
+          done
           cat > dist/index.html <<'HTML'
           <!doctype html>
           <html lang="en">
@@ -53,12 +60,13 @@ jobs:
             <title>Incident Recovery With AI Agents — Previews</title>
             <style>
               :root { color-scheme: light; }
-              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 640px; margin: 60px auto; padding: 0 24px; color: #0f172a; }
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 680px; margin: 60px auto; padding: 0 24px; color: #0f172a; }
               h1 { margin: 0 0 8px; font-size: 24px; }
-              p.lede { color: #64748b; margin: 0 0 32px; }
-              a.card { display: block; padding: 18px 20px; margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 10px; text-decoration: none; color: inherit; transition: background .15s, border-color .15s; }
+              p.lede { color: #64748b; margin: 0 0 24px; }
+              h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; margin: 28px 0 10px; }
+              a.card { display: block; padding: 16px 18px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 10px; text-decoration: none; color: inherit; transition: background .15s, border-color .15s; }
               a.card:hover { background: #f8fafc; border-color: #cbd5e1; }
-              a.card strong { font-size: 16px; display: block; margin-bottom: 4px; }
+              a.card strong { font-size: 15px; display: block; margin-bottom: 3px; }
               a.card small { color: #64748b; font-size: 13px; }
               footer { margin-top: 40px; font-size: 12px; color: #94a3b8; }
               footer a { color: #64748b; }
@@ -66,15 +74,36 @@ jobs:
           </head>
           <body>
             <h1>Incident Recovery With AI Agents</h1>
-            <p class="lede">Prototype previews</p>
+            <p class="lede">Prototype previews across iterations</p>
+
+            <h2>Wireframes</h2>
             <a class="card" href="./v1/">
-              <strong>V1 — Wireframe</strong>
-              <small>Low-fidelity Figma Make export</small>
+              <strong>V1</strong>
+              <small>Lo-fi wireframe</small>
+            </a>
+            <a class="card" href="./v2-wireframe/">
+              <strong>V2 — Wireframe</strong>
+              <small>Lo-fi wireframe</small>
+            </a>
+
+            <h2>HiFi prototypes</h2>
+            <a class="card" href="./v2/">
+              <strong>V2 — HiFi</strong>
+              <small>High-fidelity prototype</small>
+            </a>
+            <a class="card" href="./v4/">
+              <strong>V4 — HiFi</strong>
+              <small>High-fidelity prototype</small>
+            </a>
+            <a class="card" href="./v8/">
+              <strong>V8 — HiFi</strong>
+              <small>High-fidelity prototype</small>
             </a>
             <a class="card" href="./v11/">
               <strong>V11 — HiFi</strong>
               <small>High-fidelity prototype</small>
             </a>
+
             <footer>
               <a href="https://github.com/muyitao777/incident-recovery-with-ai-agents">View source on GitHub</a>
             </footer>
