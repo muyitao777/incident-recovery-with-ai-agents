@@ -23,8 +23,65 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - run: npm run build
+          cache-dependency-path: |
+            v1/package-lock.json
+            v11/package-lock.json
+
+      - name: Install & build v1
+        working-directory: ./v1
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install & build v11
+        working-directory: ./v11
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble combined dist
+        run: |
+          mkdir -p dist/v1 dist/v11
+          cp -r v1/dist/. dist/v1/
+          cp -r v11/dist/. dist/v11/
+          cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>Incident Recovery With AI Agents — Previews</title>
+            <style>
+              :root { color-scheme: light; }
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 640px; margin: 60px auto; padding: 0 24px; color: #0f172a; }
+              h1 { margin: 0 0 8px; font-size: 24px; }
+              p.lede { color: #64748b; margin: 0 0 32px; }
+              a.card { display: block; padding: 18px 20px; margin: 14px 0; border: 1px solid #e2e8f0; border-radius: 10px; text-decoration: none; color: inherit; transition: background .15s, border-color .15s; }
+              a.card:hover { background: #f8fafc; border-color: #cbd5e1; }
+              a.card strong { font-size: 16px; display: block; margin-bottom: 4px; }
+              a.card small { color: #64748b; font-size: 13px; }
+              footer { margin-top: 40px; font-size: 12px; color: #94a3b8; }
+              footer a { color: #64748b; }
+            </style>
+          </head>
+          <body>
+            <h1>Incident Recovery With AI Agents</h1>
+            <p class="lede">Prototype previews</p>
+            <a class="card" href="./v1/">
+              <strong>V1 — Wireframe</strong>
+              <small>Low-fidelity Figma Make export</small>
+            </a>
+            <a class="card" href="./v11/">
+              <strong>V11 — HiFi</strong>
+              <small>High-fidelity prototype</small>
+            </a>
+            <footer>
+              <a href="https://github.com/muyitao777/incident-recovery-with-ai-agents">View source on GitHub</a>
+            </footer>
+          </body>
+          </html>
+          HTML
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

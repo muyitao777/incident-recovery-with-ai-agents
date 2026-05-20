@@ -17,7 +17,7 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: '/v11-hifi-incident-recovery-with-ai-agents/',
+  base: '/incident-recovery-with-ai-agents/v11/',
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if
